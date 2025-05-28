@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Grow the Garden</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        /* Header dengan background image */
+        #main-header {
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 300px;
+            position: relative;
+            margin-bottom: 40px;
+        }
+
+        #main-header .overlay {
+            position: absolute;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0 15px;
+        }
+
+        #main-header h1, #main-header p {
+            position: relative;
+            z-index: 2;
+            color: white;
+        }
+
+        .section-title {
+            color: #2f4f4f;
+            background-color: #aed9c5;
+            padding: 10px 15px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+            margin-bottom: 20px;
+        }
+        .section-title:hover {
+            background-color: #94c9b7;
+        }
+
+        .card.border-green {
+            border-color: #aed9c5 !important;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 20px;
+        }
+        .card.border-green:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.15);
+        }
+
+        .card-title {
+            color: #2f4f4f;
+            font-weight: 600;
+        }
+
+        .card-body {
+            background-color: #ffffff;
+        }
+
+        /* Bubble Chat Style */
+        .chat-bubble-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #aed9c5;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            cursor: pointer;
+            z-index: 1000;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .chat-bubble-button:hover {
+            background-color: #94c9b7;
+            transform: scale(1.1);
+        }
+        .chat-bubble-button::after {
+            content: '💬';
+            font-size: 24px;
+        }
+
+        .chat-box {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 320px;
+            max-width: 90vw;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+            padding: 15px;
+            display: none;
+            z-index: 1000;
+            animation: fadeInUp 0.4s ease forwards;
+        }
+
+        .chat-box p {
+            background-color: #aed9c5;
+            padding: 8px 12px;
+            border-radius: 15px;
+            margin-bottom: 10px;
+            max-width: 100%;
+            font-size: 0.9rem;
+            line-height: 1.3;
+            color: #2f4f4f;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive tweaks */
+        @media (max-width: 768px) {
+            .card-title {
+                font-size: 1.1rem;
+            }
+            .chat-box {
+                width: 280px;
+                right: 10px;
+                bottom: 80px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .chat-bubble-button {
+                width: 50px;
+                height: 50px;
+            }
+            .chat-bubble-button::after {
+                font-size: 20px;
+            }
+            .chat-box {
+                width: 90vw;
+                right: 5vw;
+                bottom: 70px;
+                padding: 12px;
+            }
+        }
+
+        /* Footer style */
+        footer {
+            background-color: #2f4f4f;
+            color: #aed9c5;
+            padding: 20px 0;
+            text-align: center;
+            font-size: 0.9rem;
+            margin-top: 40px;
+            box-shadow: 0 -4px 8px rgba(0,0,0,0.1);
+            user-select: none;
+        }
+        footer a {
+            color: #d3f0e0;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        footer a:hover {
+            color: #ffffff;
+            text-decoration: underline;
+        }
+
+        /* Tambahan jarak antar section agar tidak terlalu rapat */
+        section {
+            margin-bottom: 50px;
+        }
+
+        /* Tambahan jarak pada galeri supaya ada space antar gambar */
+        #user-gallery .col {
+            margin-bottom: 20px;
+        }
+
+        /* Kalender Styles */
+        #calendar {
+            max-width: 100%;
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        #calendar table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        #calendar th, #calendar td {
+            width: 14.28%;
+            height: 80px;
+            text-align: right;
+            vertical-align: top;
+            border: 1px solid #d0d0d0;
+            padding: 5px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        #calendar th {
+            background-color: #aed9c5;
+            color: #2f4f4f;
+            font-weight: 600;
+        }
+
+        #calendar td:hover {
+            background-color: #e2f0e9;
+        }
+
+        .event-dot {
+            position: absolute;
+            bottom: 5px;
+            left: 5px;
+            width: 8px;
+            height: 8px;
+            background-color: #2f4f4f;
+            border-radius: 50%;
+        }
+
+        /* Modal Styles */
+        .modal-backdrop-custom {
+            background-color: rgba(0,0,0,0.5);
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Navbar with shadow -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4 shadow fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">Grow the Garden</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" 
+              aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+              <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                  <a class="nav-link active" aria-current="page" href="#">Home</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="tanaman.php">Data Tanaman</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Pricing</a>
+                </li>
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    More
+                  </a>
+                  <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="tanaman.php">Data Tanaman</a></li>
+                    <li><a class="dropdown-item" href="dashboard.php">Dashboard Tanaman</a></li>
+                    <li><a class="dropdown-item" href="#">Something else here</a></li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Margin top supaya navbar fixed tidak menutupi konten -->
+    <div style="margin-top: 70px;"></div>
+
+    <!-- Header dengan background image -->
+    <header id="main-header" style="background-image: url('680f85b307d2400b848489d4b6be8950.jpg');">
+        <div class="overlay">
+            <div class="container text-center">
+                <h1 class="display-4 fw-bold">Selamat Datang di <span>info petani</span></h1>
+                <p class="lead">Temukan info dan tips merawat tanaman terbaik untuk kebunmu</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Info Petani Section -->
+    <section id="info-petani" class="container">
+        <h2 class="section-title">Info Petani</h2>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card border-green shadow-sm">
+                    <img src="images (3).jpg" class="card-img-top" alt="Petani 1">
+                    <div class="card-body">
+                        <h5 class="card-title">Budi Santoso</h5>
+                        <p class="card-text">Petani asal Yogyakarta yang fokus pada pertanian organik dan edukasi masyarakat.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-green shadow-sm">
+                    <img src="hidroponik-tepis-stigma-buruk-469784a7daf4c39.jpeg" class="card-img-top" alt="Petani 2">
+                    <div class="card-body">
+                        <h5 class="card-title">Siti Aminah</h5>
+                        <p class="card-text">Petani wanita dari Bandung yang mengembangkan sayuran hidroponik ramah lingkungan.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-green shadow-sm">
+                    <img src="Resize_20230831_170746_6974.webp" class="card-img-top" alt="Petani 3">
+                    <div class="card-body">
+                        <h5 class="card-title">Rahmat Hidayat</h5>
+                        <p class="card-text">Petani dari Lombok yang mengembangkan kebun buah tropis untuk ekspor.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Fitur Tentang Petani -->
+    <section class="container">
+        <h2 class="section-title">Macam macam petani menurut jenis usahanya</h2>
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card border-green shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Menurut Wahyudin (2005:39) Golongan petani di bagi menjadi tiga yaitu : 1. Petani Kaya : yakni petani yang memiliki luas lahan pertanian 2,5 ha lebih. 2. Petani Sedang : petani yang memiliki luas lahan pertanian 1 sampai 2,5 ha. 3. Petani Miskin : petani yang memiliki luas lahan pertanian kurang dari 1 ha.</h5>
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card border-green shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Pemasaran Produk</h5>
+                        <p class="card-text">Membantu petani memasarkan produk langsung ke konsumen lewat platform digital dan pemasaran offline.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tips Merawat Tanaman -->
+    <!-- Tips Merawat Tanaman -->
+<section class="container">
+    <h2 class="section-title">Tips Merawat Tanaman</h2>
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <div class="card border-green shadow-sm p-3">
+                <h5 class="card-title">Penyiraman Rutin</h5>
+                <p>Sirami tanaman secara teratur sesuai kebutuhan jenis tanaman, hindari penyiraman berlebihan.</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card border-green shadow-sm p-3">
+                <h5 class="card-title">Pemupukan Organik</h5>
+                <p>Gunakan pupuk organik untuk menjaga kesuburan tanah dan kesehatan tanaman.</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card border-green shadow-sm p-3">
+                <h5 class="card-title">Pemangkasan Teratur</h5>
+                <p>Potong ranting dan daun yang kering agar tanaman tumbuh sehat dan subur.</p>
+            </div>
+        </div>
+
+        <!-- Tambahan Tips Baru -->
+        <div class="col-md-4 mb-3">
+            <div class="card border-green shadow-sm p-3">
+                <h5 class="card-title">Pemilihan Media Tanam</h5>
+                <p>Pilih media tanam yang sesuai dengan jenis tanaman, misalnya tanah gembur untuk akar berkembang optimal.</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card border-green shadow-sm p-3">
+                <h5 class="card-title">Pencahayaan Cukup</h5>
+                <p>Pastikan tanaman mendapatkan cahaya matahari sesuai kebutuhan, jangan terlalu terpapar langsung jika tanaman sensitif.</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card border-green shadow-sm p-3">
+                <h5 class="card-title">Pengendalian Hama</h5>
+                <p>Periksa tanaman secara rutin dan gunakan pestisida organik untuk mengendalikan hama tanpa merusak tanaman.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+    <!-- Kalender dan Pengingat -->
+    <section class="container">
+        <h2 class="section-title">Kalender dan Pengingat</h2>
+        <div id="calendar"></div>
+        <button class="btn btn-success mt-3" id="add-event-btn">Tambah Pengingat</button>
+    </section>
+
+    <!-- Galeri Foto & Proyek Kebun Pengguna -->
+    <section class="container" id="user-gallery-section">
+        <h2 class="section-title">Galeri Foto & Proyek Kebun Pengguna</h2>
+        <div class="row" id="user-gallery">
+            <!-- Contoh foto proyek -->
+            <div class="col-md-4">
+                <div class="card border-green shadow-sm">
+                    <img src="https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=600&q=80" class="card-img-top" alt="Kebun Rumah">
+                    <div class="card-body">
+                        <p class="card-text">Kebun rumah sederhana dengan tanaman herbal.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-green shadow-sm">
+                    <img src="https://images.unsplash.com/photo-1468071174046-657d9d351a40?auto=format&fit=crop&w=600&q=80" class="card-img-top" alt="Proyek Kebun Sekolah">
+                    <div class="card-body">
+                        <p class="card-text">Proyek kebun sekolah yang melibatkan siswa dan guru.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Chat bubble -->
+    <button class="chat-bubble-button" id="chat-toggle"></button>
+
+    <div class="chat-box" id="chat-box">
+        <p>Tips Cara Menjadi Petani Yang Sukses!!</p>
+          <p>1. Jangan Gengsi</p>
+          <p>2. Petani Harus Pandai Berinovasi dan memanfaatkan teknologi</p>
+          <p>3. Cerdas Mengambil Peluang</p>
+          <p>4. Pintar Memahami Lingkungan</p>
+          <p>5. Memahami Pasar Dan Memasarkan Produk Dengan Baik</p>
+        
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        &copy; 2025 Grow the Garden. All rights reserved. | <a href="#">Privacy Policy</a>
+    </footer>
+
+    <!-- Bootstrap JS dan Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Chat bubble toggle
+        const chatToggle = document.getElementById('chat-toggle');
+        const chatBox = document.getElementById('chat-box');
+        chatToggle.addEventListener('click', () => {
+            if (chatBox.style.display === 'block') {
+                chatBox.style.display = 'none';
+            } else {
+                chatBox.style.display = 'block';
+            }
+        });
+
+        // Kalender sederhana
+        const calendarEl = document.getElementById('calendar');
+
+        // Data events pengingat
+        let events = JSON.parse(localStorage.getItem('gardenEvents') || '[]');
+
+        // Render kalender sederhana bulan ini
+        function renderCalendar() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth();
+
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const startDay = firstDay.getDay(); // Minggu=0, Senin=1 ...
+            const daysInMonth = lastDay.getDate();
+
+            let html = '<table><thead><tr>';
+            const days = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+            days.forEach(day => html += `<th>${day}</th>`);
+            html += '</tr></thead><tbody><tr>';
+
+            // Kosongkan hari sebelum tanggal 1
+            for(let i=0; i<startDay; i++) {
+                html += '<td></td>';
+            }
+
+            // Tanggal
+            for(let date=1; date<=daysInMonth; date++) {
+                const dayOfWeek = (startDay + date - 1) % 7;
+
+                // Cek ada event pada tanggal ini?
+                const eventExists = events.some(ev => {
+                    const evDate = new Date(ev.date);
+                    return evDate.getFullYear() === year && evDate.getMonth() === month && evDate.getDate() === date;
+                });
+
+                html += `<td data-date="${year}-${month+1}-${date}">`;
+                html += `<div>${date}</div>`;
+                if(eventExists) {
+                    html += '<div class="event-dot" title="Ada pengingat"></div>';
+                }
+                html += '</td>';
+
+                if(dayOfWeek === 6 && date !== daysInMonth) {
+                    html += '</tr><tr>';
+                }
+            }
+
+            // Kosongkan kolom terakhir jika kurang dari 7 hari
+            let lastDayOfWeek = (startDay + daysInMonth - 1) % 7;
+            for(let i=lastDayOfWeek+1; i<7; i++) {
+                html += '<td></td>';
+            }
+
+            html += '</tr></tbody></table>';
+            calendarEl.innerHTML = html;
+
+            // Tambahkan event click pada tanggal
+            calendarEl.querySelectorAll('td[data-date]').forEach(td => {
+                td.addEventListener('click', () => {
+                    const selectedDate = td.getAttribute('data-date');
+                    showEventModal(selectedDate);
+                });
+            });
+        }
+
+        // Modal event tambah/edit
+        function showEventModal(date) {
+            const existingEvent = events.find(ev => ev.date === date);
+
+            const eventDesc = existingEvent ? existingEvent.desc : '';
+
+            const modalHtml = `
+                <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <form id="event-form">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="eventModalLabel">Pengingat untuk ${date}</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          <div class="mb-3">
+                            <label for="event-desc" class="form-label">Deskripsi Pengingat</label>
+                            <textarea class="form-control" id="event-desc" rows="3" required>${eventDesc}</textarea>
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                          ${existingEvent ? '<button type="button" id="delete-event-btn" class="btn btn-danger me-auto">Hapus</button>' : ''}
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                          <button type="submit" class="btn btn-primary">Simpan</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+            `;
+
+            // Sisipkan modal ke body
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+            const eventModalEl = document.getElementById('eventModal');
+            const eventModal = new bootstrap.Modal(eventModalEl);
+
+            // Submit form simpan event
+            eventModalEl.querySelector('#event-form').addEventListener('submit', e => {
+                e.preventDefault();
+                const desc = eventModalEl.querySelector('#event-desc').value.trim();
+
+                if(desc) {
+                    if(existingEvent) {
+                        existingEvent.desc = desc;
+                    } else {
+                        events.push({date: date, desc: desc});
+                    }
+                    localStorage.setItem('gardenEvents', JSON.stringify(events));
+                    eventModal.hide();
+                    renderCalendar();
+                }
+            });
+
+            // Tombol hapus event
+            if(existingEvent) {
+                eventModalEl.querySelector('#delete-event-btn').addEventListener('click', () => {
+                    events = events.filter(ev => ev.date !== date);
+                    localStorage.setItem('gardenEvents', JSON.stringify(events));
+                    eventModal.hide();
+                    renderCalendar();
+                });
+            }
+
+            // Hapus modal dari DOM setelah ditutup
+            eventModalEl.addEventListener('hidden.bs.modal', () => {
+                eventModalEl.remove();
+            });
+
+            eventModal.show();
+        }
+
+        // Tombol tambah event tanggal hari ini
+        document.getElementById('add-event-btn').addEventListener('click', () => {
+            const now = new Date();
+            const dateStr = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;
+            showEventModal(dateStr);
+        });
+
+        // Initial render kalender
+        renderCalendar();
+        
+    </script>
+</body>
+</html>
